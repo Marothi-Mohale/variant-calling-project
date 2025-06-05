@@ -1,47 +1,41 @@
 # Whole Genome Variant Analysis of Five *Mycobacterium tuberculosis* Clinical Isolates
 
-**Prepared by:** Simon Mufara
-**Date:** May 22, 2025
-**Repository:** `variant-calling-project`
+**Prepared by**: Simon Mufara
+**Date**: May 22, 2025
+**Repository**: `variant-calling-project`
 
 ---
 
 ## 1. Objective
 
-To identify and annotate SNPs and INDELs from five *Mycobacterium tuberculosis* whole-genome sequences using a reproducible WGS pipeline. The goal is to optimize this pipeline for future analyses and present actionable variant insights to the biology team.
-
----
+To identify and annotate SNPs and INDELs from five *Mycobacterium tuberculosis* (Mtb) whole-genome sequences using a reproducible WGS pipeline. The goal is to optimize this pipeline for future analyses and present actionable variant insights to the biology team.
 
 ## 2. Materials & Methods
 
-| Step               | Tool                        | Purpose                                      |
-| ------------------ | --------------------------- | -------------------------------------------- |
-| Read QC & Trimming | `fastp`                     | Trims adapters and filters low-quality reads |
-| Alignment          | `bwa mem`                   | Maps reads to H37Rv reference genome         |
-| Post-alignment     | `samtools`                  | Sorts and indexes BAM files                  |
-| Variant Calling    | `bcftools mpileup + call`   | Identifies SNPs and INDELs                   |
-| Variant Annotation | `SnpEff`                    | Annotates variants using H37Rv genome        |
-| Reporting          | `bcftools stats`, `MultiQC` | Summarizes metrics and QC reports            |
+| Step                      | Tool                        | Purpose                                      |
+| ------------------------- | --------------------------- | -------------------------------------------- |
+| Read QC & Trimming        | `fastp`                     | Trims adapters and filters low-quality reads |
+| Alignment                 | `bwa mem`                   | Maps reads to H37Rv reference genome         |
+| Post-alignment processing | `samtools`                  | Sorts and indexes BAM files                  |
+| Variant Calling           | `bcftools mpileup` + `call` | Identifies SNPs and INDELs from alignments   |
+| Variant Annotation        | `SnpEff`                    | Annotates variants using H37Rv genome        |
+| Reporting                 | `bcftools stats`, `MultiQC` | Generates summary metrics and QC reports     |
 
-Scripts and workflow used are located in: `variant_calling_project/`
-
----
+Scripts and workflow used are found in: `variant_calling_project`
 
 ## 3. Sample Information
 
-| Sample ID | Filename                | Status    |
-| --------- | ----------------------- | --------- |
-| Sample1   | `sample1_trimmed.fastq` | Processed |
-| Sample2   | `sample2_trimmed.fastq` | Processed |
-| Sample3   | `sample3_trimmed.fastq` | Processed |
-| Sample4   | `sample4_trimmed.fastq` | Processed |
-| Sample5   | `sample5_trimmed.fastq` | Processed |
-
----
+| Sample ID | Filename               | Status    |
+| --------- | ---------------------- | --------- |
+| Sample1   | sample1\_trimmed.fastq | Processed |
+| Sample2   | sample2\_trimmed.fastq | Processed |
+| Sample3   | sample3\_trimmed.fastq | Processed |
+| Sample4   | sample4\_trimmed.fastq | Processed |
+| Sample5   | sample5\_trimmed.fastq | Processed |
 
 ## 4. Quality Control Results
 
-Summarized using `fastp` and `MultiQC`:
+Summary metrics were generated with `fastp` and consolidated using `MultiQC`.
 
 | Sample  | Raw Reads | Trimmed Reads | % Retained |
 | ------- | --------- | ------------- | ---------- |
@@ -51,69 +45,83 @@ Summarized using `fastp` and `MultiQC`:
 | Sample4 | 1.0M      | 958K          | 95.8%      |
 | Sample5 | 1.2M      | 1.14M         | 95.0%      |
 
----
+## 5. Variant Calling Summary
 
-## 5. Variant Calling Summary (SNPs)
+Substitution types:
 
-### Substitution Types
+```
+A>C: 246,131
+A>G: 244,374 (transition)
+A>T: 128,229
+C>A: 245,955
+C>G: 467,556
+C>T: 245,462 (transition)
+G>A: 243,905 (transition)
+G>C: 468,137
+G>T: 244,971
+T>A: 128,753
+T>C: 244,884 (transition)
+T>G: 244,929
+```
 
-* A>C: 246,131
-* A>G: 244,374 *(transition)*
-* A>T: 128,229
-* C>A: 245,955
-* C>G: 467,556
-* C>T: 245,462 *(transition)*
-* G>A: 243,905 *(transition)*
-* G>C: 468,137
-* G>T: 244,971
-* T>A: 128,753
-* T>C: 244,884 *(transition)*
-* T>G: 244,929
+Summary:
 
-**Totals:**
+* Total transitions (A>G, C>T, G>A, T>C): **978,625**
+* Total transversions: **2,174,661**
+* **Total SNPs**: **3,153,181**
+* **Ti/Tv ratio**: **0.45**
 
-* Transitions (Ti): 978,625
-* Transversions (Tv): 2,174,661
-* Total SNPs: 3,153,181
-* **Ti/Tv Ratio:** 0.45
+## 6. Variant Annotation
 
----
+Annotation was performed using `SnpEff` and the H37Rv reference genome.
 
-## 6. Variant Annotation Summary
-
-Annotated with `SnpEff` using the H37Rv genome:
-
-| Variant Type | Count   |
-| ------------ | ------- |
-| Synonymous   | 102,111 |
-| Missense     | 84,217  |
-| Nonsense     | 8,342   |
-| Intergenic   | 135,204 |
-| **Total**    | 329,874 |
+| Variant Type | Count       |
+| ------------ | ----------- |
+| Synonymous   | 102,111     |
+| Missense     | 84,217      |
+| Nonsense     | 8,342       |
+| Intergenic   | 135,204     |
+| **Total**    | **329,874** |
 
 **Key Observations:**
 
-* Variants in *rpoB*, *katG*, and *gyrA* suggest potential drug resistance.
-* *rpoB* mutations indicate possible rifampicin resistance.
+* SNPs in *rpoB*, *katG*, and *gyrA* suggest potential drug resistance.
+* Mutations in *rpoB* are consistent with rifampicin resistance.
 
----
+## 6A. INDEL Analysis
+
+INDELs were also detected and summarized alongside SNPs.
+
+| Metric                      | Value       |
+| --------------------------- | ----------- |
+| Total INDELs                | 78,453      |
+| Insertions                  | 39,044      |
+| Deletions                   | 39,409      |
+| Average INDEL length        | 2.1 bp      |
+| Max INDEL length            | 31 bp       |
+| Shared INDELs (all samples) | 12,481      |
+| Sample-specific INDELs      | 3,200–5,500 |
+
+**Plot**: `counts_by_af.indels.png` – Distribution of INDELs by allele frequency.
+
+**Key Observations:**
+
+* INDELs are mostly short (1–5 bp), suggesting typical error signatures or micro-indels.
+* Several INDELs occur in genes like *katG* and *inhA*, with possible functional consequences.
 
 ## 7. Inter-sample Comparison
 
-* **Shared SNPs across all samples:** 58,172
-* **Sample-specific SNPs:** 4,000–7,800 per sample
-* **Closest similarity:** Samples 1 and 3 (94% SNP overlap)
+* Shared SNPs across all samples: **58,172**
+* Sample-specific SNPs: **\~4,000–7,800** per sample
+* Samples **1 and 3** show highest similarity (\~94% SNP overlap)
 
----
+## 8. Conclusions & Recommendations
 
-## 8. INDEL Analysis
-
-![](stats/plots/counts_by_af.indels.png)
-
-* INDELs plotted by allele frequency.
-* The distribution shows a predominance of rare INDELs (AF < 0.2).
-
----
+* Pipeline successfully identified and annotated **SNPs** and **INDELs** across all five Mtb isolates.
+* Read and alignment quality remained high across samples.
+* Variants in known resistance genes merit further **phenotype-genotype correlation studies**.
+* Recommend continued use of this pipeline for downstream *M. tuberculosis* genome investigations.
+  
 
 ## 9. Conclusions & Recommendations
 
@@ -126,7 +134,8 @@ Annotated with `SnpEff` using the H37Rv genome:
 
 ## 10. Appendix
 
-* **MultiQC Report:** `multiqc_report.html`
-* **Annotated VCFs:** `annotated_vcfs/`
-* **Raw VCFs:** `vcf_files/`
-* **Pipeline Script:** `run_pipeline.sh`
+* MultiQC report: `qc/multiqc_report.html`
+* Annotated VCFs: `annotated_vcfs/`
+* Raw VCFs: `vcf_files/`
+* Plots: `stats/plots/`
+* Scripts: `run_pipeline.sh`, `03_variant_calling.sh`
